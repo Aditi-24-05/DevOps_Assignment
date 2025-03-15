@@ -48,5 +48,16 @@ pipeline {
                 }
             }
         }
+stage('Push to Docker Hub') {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials-id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                sh 'docker tag $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:latest'
+                sh 'docker push $DOCKER_USER/$IMAGE_NAME:latest'
+            }
+        }
+    }
+}
 }
 }
