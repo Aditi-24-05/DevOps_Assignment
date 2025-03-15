@@ -3,6 +3,10 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'BCD50'  
+        IMAGE_NAME = "devops_assignment-petclinic"
+        CONTAINER_NAME = "devops_assignment-petclinic-1"
+        DB_IMAGE = "mysql:9.1"
+        DB_CONTAINER = "devops_assignment-mysql-1"
     }
 
     stages {
@@ -18,6 +22,16 @@ pipeline {
                 sh './mvnw clean package'
             }
         }
+         stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+          stage('Run Tests in Container') {
+            steps {
+                sh 'docker run --rm $IMAGE_NAME mvn test'
+            }
+        }
 
         stage('SonarQube Analysis') {
             steps {
@@ -26,5 +40,13 @@ pipeline {
             }
         }
     }
+     stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
 }
 }
