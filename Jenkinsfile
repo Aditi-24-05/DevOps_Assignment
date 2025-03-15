@@ -27,11 +27,11 @@ pipeline {
                 sh 'docker build -t $IMAGE_NAME .'
             }
         }
-          stage('Run Tests in Container') {
-            steps {
-                sh 'docker run --rm $IMAGE_NAME mvn test'
-            }
-        }
+         stage('Run Tests') {
+    steps {
+        sh './mvnw test'
+    }
+}
 
         stage('SonarQube Analysis') {
             steps {
