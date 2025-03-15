@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/Aditi-24-05/DevOps_Assignment.git'
+                git branch: 'main', url: 'https://github.com/Aditi-24-05/DevOps_Assignment.git'
             }
         }
 
