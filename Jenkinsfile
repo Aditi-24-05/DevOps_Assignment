@@ -18,30 +18,46 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'echo "Skipping tests..."'
+                sh 'chmod +x mvnw'
+                sh './mvnw clean package -X'
             }
         }
          stage('Build Docker Image') {
             steps {
-                sh 'echo "Skipping tests..."'
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
-         stage('Run Tests') {
-    steps {
-       sh 'echo "Skipping tests..."'
-    }
-}
-
-     stage('Deploy with Docker Compose') {
+        stage('Run Tests') {
             steps {
-                sh 'echo "Skipping tests..."'
+                 sh './mvnw test'
             }
         }
-stage('Push to Docker Hub') {
-    steps {
-        sh 'echo "Skipping tests..."'
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('BCD50') {
+             sh './mvnw clean verify sonar:sonar -Dsonar.login=sqa_219f7117674fcc5aec62bf676ba5c5397f056c06'
+            }
         }
     }
 
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials-id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    sh 'docker tag $IMAGE_NAME $DOCKER_USER/$IMAGE_NAME:latest'
+                    sh 'docker push $DOCKER_USER/$IMAGE_NAME:latest'
+                }
+            }
+        }
+    }
 }
 }
