@@ -36,7 +36,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('BCD50') {
-             sh './mvnw clean verify sonar:sonar -Dsonar.login=sqa_219f7117674fcc5aec62bf676ba5c5397f056c06'
+             sh './mvnw clean verify sonar:sonar -Dsonar.login=sqa_917d05cf65ce2af1b023fd87c6db60dd0006aaff'
             }
         }
     }
